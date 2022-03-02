@@ -184,10 +184,9 @@ const drawDiagram = () => {
 
 // wave types
 const getTriangleWave = (t, n, sizeScalar) => {
-  const _t = t * PI * 2;
   const _r = sizeScalar * ((8 / PI ** 2) * ((-1) ** ((n - 1) / 2) / n ** 2));
-  const x = _r * cos(n * _t);
-  const y = _r * sin(n * _t);
+  const x = _r * cos(n * t);
+  const y = _r * sin(n * t);
   return createVector(x, y, _r);
 };
 
@@ -199,9 +198,9 @@ const getSquareWave = (t, n, sizeScalar) => {
 };
 
 const getSawToothWave = (t, n, sizeScalar) => {
-  const _r = sizeScalar * (2 / n) * (-1) ** (n + 1);
-  const x = _r * cos(n * t);
-  const y = _r * sin(n * t);
+  const _r = (sizeScalar * -2) / (n * PI); //sizeScalar * (2 / n) * (-1) ** (n + 1);
+  const y = _r * cos(n * t);
+  const x = _r * sin(n * t);
   return createVector(x, y, _r);
 };
 
@@ -219,7 +218,7 @@ const getFourierWave = (t, n, sizeScalar = 1, type) => {
 const getWave = (t, sizeScalar = 1, type) => {
   switch (type) {
     case 0:
-      return (4 * abs(t - floor(t + 3 / 4) + 1 / 4) - 1) * sizeScalar;
+      return (4 * abs((t/(PI*2)) - floor((t/(PI*2)) + 3 / 4) + 1 / 4) - 1) * sizeScalar;
     case 1:
       return sgn(sin((2 * PI * t) / (2 * PI))) * sizeScalar; //4 * t - 2 * (2 * t) + 1, 2 * t ;
     default:
