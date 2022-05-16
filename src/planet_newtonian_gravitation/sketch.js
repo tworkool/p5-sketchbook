@@ -1,6 +1,6 @@
 const planetList = [];
 let planetIdIterator = 0;
-const G = 0.67;
+const G = 0.1;
 const OFF_SCREEN_MARGIN = 20;
 const MAX_INIT_VELOCITY = 2;
 const MAX_VELOCITY = 100;
@@ -53,13 +53,14 @@ function createPlanetOffScreen() {
   return new Planet(
     newPlanetPos,
     newPlanetVelocity,
-    random(10, 14),
+    random(10, 30),
     color(230, 20, 20)
   );
 }
 
 function draw() {
   background(30);
+  showFrameRate();
 
   if (planetList.length < MAX_PLANETS) {
     planetList.push(createPlanetOffScreen());
@@ -82,6 +83,7 @@ class Planet {
     this.pos = initialPos;
     this.vel = initialVel;
     this.m = mass;
+    this.r = mass * 3;
     this.c = color;
     this.id = planetIdIterator;
     planetIdIterator++;
@@ -101,7 +103,7 @@ class Planet {
 
   getGravitationForce(p) {
     const diff = p.pos.copy().sub(this.pos);
-    const sqrDist = diff.magSq();
+    const sqrDist = diff.magSq(); // - abs(p.r + this.r);
     const forceDir = diff.copy().normalize();
     const force = (G * this.m * p.m) / sqrDist;
     return createVector(force * forceDir.x, force * forceDir.y);
@@ -110,7 +112,10 @@ class Planet {
   setVelocity(p) {
     const gravitationForce = this.getGravitationForce(p);
     this.vel.add(
-      createVector(gravitationForce.x * TIME_STEP, gravitationForce.y * TIME_STEP)
+      createVector(
+        gravitationForce.x * TIME_STEP,
+        gravitationForce.y * TIME_STEP
+      )
     );
   }
 
@@ -126,8 +131,10 @@ class Planet {
     this.createMovement();
     // cap max velocity
     //this.vel.normalize().mult(5);
-    if (abs(this.vel.x) > MAX_VELOCITY) this.vel.x = this.vel.x > 0 ? MAX_VELOCITY : -MAX_VELOCITY;
-    if (abs(this.vel.y) > MAX_VELOCITY) this.vel.y = this.vel.y > 0 ? MAX_VELOCITY : -MAX_VELOCITY;
+    if (abs(this.vel.x) > MAX_VELOCITY)
+      this.vel.x = this.vel.x > 0 ? MAX_VELOCITY : -MAX_VELOCITY;
+    if (abs(this.vel.y) > MAX_VELOCITY)
+      this.vel.y = this.vel.y > 0 ? MAX_VELOCITY : -MAX_VELOCITY;
     this.pos.add(createVector(this.vel.x * TIME_STEP, this.vel.y * TIME_STEP));
 
     this.history.unshift(this.pos.copy());
@@ -147,7 +154,7 @@ class Planet {
   draw() {
     noStroke();
     fill(255, 255, 225);
-    ellipse(this.pos.x, this.pos.y, this.m * 3);
+    ellipse(this.pos.x, this.pos.y, this.r);
     this.drawTrail();
   }
 
@@ -160,7 +167,7 @@ class Planet {
       vertex(pos.x, pos.y);
     }
     endShape(); */
-    strokeWeight(2);
+    strokeWeight(this.r);
     noFill();
     for (let i = 0; i < this.history.length; i++) {
       if (i == 0) {

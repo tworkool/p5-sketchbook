@@ -43,6 +43,7 @@ function setup() {
 
 function draw() {
   background(20);
+  showFrameRate();
 
   stroke(255);
   noFill();
@@ -218,7 +219,10 @@ const getFourierWave = (t, n, sizeScalar = 1, type) => {
 const getWave = (t, sizeScalar = 1, type) => {
   switch (type) {
     case 0:
-      return (4 * abs((t/(PI*2)) - floor((t/(PI*2)) + 3 / 4) + 1 / 4) - 1) * sizeScalar;
+      return (
+        (4 * abs(t / (PI * 2) - floor(t / (PI * 2) + 3 / 4) + 1 / 4) - 1) *
+        sizeScalar
+      );
     case 1:
       return sgn(sin((2 * PI * t) / (2 * PI))) * sizeScalar; //4 * t - 2 * (2 * t) + 1, 2 * t ;
     default:
